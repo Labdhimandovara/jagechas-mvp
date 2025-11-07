@@ -2,6 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const { apiLimiter } = require('./middleware/rateLimiter');
 
 // Load environment variables
 dotenv.config();
@@ -17,7 +20,14 @@ const adminRoutes = require('./routes/adminRoutes');
 // Initialize Express app
 const app = express();
 
-// Middleware
+// Security Middleware
+app.use(helmet()); // Set security headers
+app.use(mongoSanitize()); // Prevent NoSQL injection
+
+// Rate limiting
+app.use('/api/', apiLimiter);
+
+// CORS configuration
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
@@ -34,8 +44,10 @@ app.use(cors({
   },
   credentials: true
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Body parsing middleware with size limits
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
@@ -61,7 +73,16 @@ app.get('/', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!', error: err.message });
+  
+  // Don't leak error details in production
+  const errorMessage = process.env.NODE_ENV === 'production' 
+    ? 'Something went wrong!' 
+    : err.message;
+    
+  res.status(err.status || 500).json({ 
+    message: errorMessage,
+    ...(process.env.NODE_ENV !== 'production' && { error: err.message })
+  });
 });
 
 // Start server

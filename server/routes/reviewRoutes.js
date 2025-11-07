@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const reviewController = require('../controllers/reviewController');
 const { authenticate, authorize } = require('../middleware/auth');
+const { reviewLimiter } = require('../middleware/rateLimiter');
+const { reviewValidation, validate } = require('../middleware/validator');
 
 // @route   GET /api/reviews
 // @desc    Get all reviews
@@ -15,6 +17,9 @@ router.post(
   '/add',
   authenticate,
   authorize('user'),
+  reviewLimiter,
+  reviewValidation,
+  validate,
   reviewController.addReview
 );
 
