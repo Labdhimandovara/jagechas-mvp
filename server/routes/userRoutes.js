@@ -3,8 +3,13 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const { authenticate } = require('../middleware/auth');
 
+// @route   GET /api/users/profile
+// @desc    Get current user profile
+// @access  Private
+router.get('/profile', authenticate, userController.getUserProfile);
+
 // @route   GET /api/users/:userId
-// @desc    Get user profile
+// @desc    Get user profile by ID
 // @access  Private
 router.get('/:userId', authenticate, userController.getUserProfile);
 

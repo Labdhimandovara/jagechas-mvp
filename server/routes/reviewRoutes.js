@@ -3,6 +3,11 @@ const router = express.Router();
 const reviewController = require('../controllers/reviewController');
 const { authenticate, authorize } = require('../middleware/auth');
 
+// @route   GET /api/reviews
+// @desc    Get all reviews
+// @access  Public
+router.get('/', reviewController.getAllReviews);
+
 // @route   POST /api/reviews/add
 // @desc    Add new review
 // @access  Private (User only)

@@ -2,6 +2,24 @@ const Review = require('../models/Review');
 const User = require('../models/User');
 const Product = require('../models/Product');
 
+// Get all reviews
+exports.getAllReviews = async (req, res) => {
+  try {
+    const reviews = await Review.find()
+      .populate('userId', 'name email')
+      .populate({
+        path: 'productId',
+        populate: { path: 'companyId', select: 'name' }
+      })
+      .sort({ submittedOn: -1 })
+      .limit(100); // Limit to prevent huge payloads
+
+    res.json({ reviews });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 // Add new review
 exports.addReview = async (req, res) => {
   try {
