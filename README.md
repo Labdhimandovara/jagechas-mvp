@@ -1,3 +1,28 @@
+# Jagechas (MVP)
+
+Jagechas — two-sided review analytics platform (MVP).
+
+This repository contains a full-stack demo app:
+
+- `server/` - Node.js + Express backend
+- `client/` - React frontend (Create React App)
+
+Quick start (local):
+
+1. Install dependencies:
+   - `cd server && npm install`
+   - `cd ../client && npm install`
+2. Configure environment variables in `server/.env` (MONGO_URI, JWT_SECRET, PORT)
+3. Run backend: `cd server && node server.js`
+4. Run frontend: `cd client && npm start`
+
+Deploy notes: We recommend deploying the backend to Render or Fly and the frontend to Vercel.
+
+Test credentials (seeded):
+- admin@jagechas.com / password123
+
+---
+If you want, I can also create a `Dockerfile`, or help publish this repository to GitHub and deploy it.
 # 🚀 Jagechas - Review Analytics Platform
 
 A two-sided review analytics platform where users write reviews, earn points, and companies view insights.
